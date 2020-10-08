@@ -10,4 +10,14 @@ class PostRepository
     public function getAll(){
         return PostCollection::collection(Post::all());
     }
+
+    public function save($data)
+    {
+        $post = Post::create([
+            'title'  => $data['title'],
+            'body'   => $data['body'],
+        ]);
+
+        return $post;
+    }
 }

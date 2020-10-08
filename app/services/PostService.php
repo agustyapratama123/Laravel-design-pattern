@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use InvalidArgumentException;
 use App\Repositories\PostRepository;
+use Illuminate\Support\Facades\Validator;
+
 
 class PostService 
 {
@@ -15,5 +18,21 @@ class PostService
 
     public function getAll(){
         return $this->postRepository->getAll();
+    }
+
+    public function savePostData($data)
+    {
+        $validator = Validator::make( $data, [
+        'title' => 'required',
+        'body'   => 'required'    
+        ]);
+
+        if($validator->fails()){
+            throw new InvalidArgumentException($validator->errors()->first());
+        }
+
+        $result = $this->postRepository->save($data);
+
+        return $result;
     }
 }

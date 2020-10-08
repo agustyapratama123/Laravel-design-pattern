@@ -31,7 +31,7 @@ class PostController extends Controller
         } catch (Exception $exception) {
             $result = [
                 'status' => 500,
-                'error' => $e->getMessage()
+                'error' => $exception->getMessage()
             ];
         }
 
@@ -56,7 +56,24 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->only([
+            'title',
+            'body'
+        ]);
+
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->postService->savePostData($data);
+        } catch (Exception $exception) {
+            $result=[
+                'status' => 500,
+                'error' => $exception->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
+
     }
 
     /**
