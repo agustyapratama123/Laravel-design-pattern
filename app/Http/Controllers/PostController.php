@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-use App\Http\Resources\PostCollection;
 use App\Http\Resources\PostResource;
+use App\Services\PostService;
+use Exception;
 
 class PostController extends Controller
 {
@@ -14,9 +15,27 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected $postService;
+
+    public function __construct(PostService $postService){
+        $this->postService = $postService;
+    }
+
+
     public function index()
     {
-        return PostCollection::collection(Post::all());
+
+        try {
+            $result = $this->postService->getAll();
+        } catch (Exception $exception) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return response()->json($result,200);
     }
 
     /**
