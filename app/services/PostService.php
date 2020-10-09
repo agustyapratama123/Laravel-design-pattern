@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\PostRepository;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,5 +41,33 @@ class PostService
     public function getById($post)
     {
         return $this->postRepository->getById($post);
+    }
+
+    public function updatePost($data,$id)
+    {
+        $validator = Validator::make($data,[
+            'title' => 'required',
+            'body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            throw new InvalidArgumentException($validator->errors()->first());
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $post = $this->postRepository->updatePost($data,$id);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::info($exception->getMessage());
+
+            throw new InvalidArgumentException("Unable to Update Post Data");
+        }
+
+        DB::commit();
+
+        return $post;
+
     }
 }

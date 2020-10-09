@@ -117,12 +117,26 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
         $data = $request->only([
             'title',
             'body'
         ]);
+
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->postService->updatePost($data,$id);
+
+        } catch (Exception $exception) {
+            $result = [
+                'status' => 500,
+                'error'  => $exception->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
     }
 
     /**

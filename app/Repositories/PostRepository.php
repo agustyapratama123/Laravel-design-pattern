@@ -34,4 +34,14 @@ class PostRepository
         $post = $this->post->where('id',$postId)->first();
         return new PostResource($post);
     }
+
+    public function updatePost($data,$id)
+    {
+        $post = $this->post->find($id);
+
+        return $post->update([
+            'title' => $data['title'],
+            'body' => $data['body'],
+        ]);
+    }
 }
