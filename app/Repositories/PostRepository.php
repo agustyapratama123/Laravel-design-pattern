@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostCollection;
 use App\Exceptions\PostNotFoundException;
+use App\Exceptions\IdDeleteNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostRepository  
@@ -53,8 +54,13 @@ class PostRepository
 
     public function deleteById($id)
     {
-        $post = $this->post->find($id);
-        $post->delete();
+        $post = $this->post->where('id',$id)->first();
+
+        if(!$post){
+            throw new IdDeleteNotFoundException('post not found for delete by id '.$id);
+        }else {
+            $post->delete();
+        }
 
         return $post;
 

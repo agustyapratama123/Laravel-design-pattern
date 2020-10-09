@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\PostService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\PostResource;
+use App\Exceptions\IdDeleteNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostController extends Controller
@@ -161,6 +162,11 @@ class PostController extends Controller
         try{
             $result['data'] = $this->postService->deleteById($id);
         }catch(Exception $exception){
+            $result = [
+                "status" => 500,
+                "error" => $exception->getMessage()
+            ];
+        }catch(IdDeleteNotFoundException $exception){
             $result = [
                 "status" => 500,
                 "error" => $exception->getMessage()
