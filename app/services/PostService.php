@@ -38,9 +38,9 @@ class PostService
         return $result;
     }
 
-    public function getById($post)
+    public function getById($postId)
     {
-        return $this->postRepository->getById($post);
+        return $this->postRepository->getById($postId);
     }
 
     public function updatePost($data,$id)
@@ -69,5 +69,23 @@ class PostService
 
         return $post;
 
+    }
+
+    public function deleteById($id)
+    {
+        DB::beginTransaction();
+
+        try{
+            $post = $this->postRepository->deleteById($id);
+        }catch(Exception $exception){
+            DB::rollback();
+            Log::info($exception->getMessage());
+
+            throw new InvalidArgumentException('Unable to delete this photo');
+        }
+
+        DB::commit();
+
+        return $post;
     }
 }

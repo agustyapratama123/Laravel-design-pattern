@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use App\Http\Resources\PostResource;
 use App\Services\PostService;
-use Exception;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\PostResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostController extends Controller
 {
@@ -90,13 +92,20 @@ class PostController extends Controller
             $result['data'] = $this->postService->getById($post);
         }catch(Exception $exception){
             $result = [
-                'status' => '500',
+                'status' => 500,
                 'error'  => $exception->getMessage()
             ];
+
+        }catch(PostNotFoundException $exception){
+            
+            $result = [
+                'status' => 500,
+                'error'  => 'errrrrrr'
+            ];
+        
         }
 
         return response()->json($result, $result['status']);
-        // return new PostResource($post);
     }
 
     /**
@@ -145,8 +154,19 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
+        $result = ['status' => 200];
+
+        try{
+            $result['data'] = $this->postService->deleteById($id);
+        }catch(Exception $exception){
+            $result = [
+                "status" => 500,
+                "error" => $exception->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
     }
 }
