@@ -82,9 +82,21 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($post)
     {
-        return new PostResource($post);
+        $result = ['status' => '200'];
+
+        try{
+            $result['data'] = $this->postService->getById($post);
+        }catch(Exception $exception){
+            $result = [
+                'status' => '500',
+                'error'  => $exception->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
+        // return new PostResource($post);
     }
 
     /**
@@ -107,7 +119,10 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $data = $request->only([
+            'title',
+            'body'
+        ]);
     }
 
     /**

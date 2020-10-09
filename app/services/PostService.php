@@ -35,4 +35,9 @@ class PostService
 
         return $result;
     }
+
+    public function getById($post)
+    {
+        return $this->postRepository->getById($post);
+    }
 }
